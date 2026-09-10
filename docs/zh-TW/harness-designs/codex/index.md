@@ -1,6 +1,6 @@
 # 拆解 Codex 的 harness 設計
 
-OpenAI 的 [Codex](https://openai.com/index/harness-engineering/) 可能是四款產品裡與「harness 原教旨」連結最深的一個——那篇定義整個領域名稱的《Harness Engineering》文章，本身就是 OpenAI 團隊使用 Codex 開發產品時的經驗總結。因此，拆解 Codex 的 harness 設計，很大程度上就是拆解那篇文章背後的工程實務。
+OpenAI 的 [Codex](https://openai.com/index/harness-engineering/) 可能是四款產品裡與「harness 原教旨」連結最深的一個，那篇定義整個領域名稱的《Harness Engineering》文章，本身就是 OpenAI 團隊使用 Codex 開發產品時的經驗總結。因此，拆解 Codex 的 harness 設計，很大程度上就是拆解那篇文章背後的工程實務。
 
 Codex 的哲學可以濃縮成一句話：**儲存庫即事實來源（repository as the system of record），AGENTS.md 只是目錄頁，工程的價值在於設計環境、表達意圖、建構回饋循環。**
 
@@ -24,10 +24,10 @@ OpenAI 團隊使用 Codex，在幾週內交付了一個最後達到上百萬行�
 
 Codex 的上下文工程可概括為四種策略。這是社群在 "context engineering" 成為獨立學科後，總結並對應回 Codex 的框架（框架出處請參閱 [Context Engineering for Codex CLI](https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/)）：
 
-- **Write（寫出去）**：把上下文持久化到視窗之外——把結論寫入文件、把狀態寫入檔案，而不是留在對話裡。對應「儲存庫即事實來源」。
-- **Select（選進來）**：只把需要的 token 拉進視窗——由 AGENTS.md 指路、隨選讀取檔案，而不是把整個儲存庫塞進去。
-- **Compress（壓縮）**：保留真正重要的內容——Codex 有自動 compaction 和手動 `/compact`，可以自訂 `compact_prompt`（請參閱 [Context Engineering for Codex CLI](https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/)）。
-- **Isolate（隔離）**：把上下文切分到不同邊界——使用 subagent 隔離不同任務的上下文，前端 subagent 永遠看不到後端的資料庫 schema。
+- **Write（寫出去）**：把上下文持久化到視窗之外，把結論寫入文件、把狀態寫入檔案，而不是留在對話裡。對應「儲存庫即事實來源」。
+- **Select（選進來）**：只把需要的 token 拉進視窗，由 AGENTS.md 指路、隨選讀取檔案，而不是把整個儲存庫塞進去。
+- **Compress（壓縮）**：保留真正重要的內容，Codex 有自動 compaction 和手動 `/compact`，可以自訂 `compact_prompt`（請參閱 [Context Engineering for Codex CLI](https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/)）。
+- **Isolate（隔離）**：把上下文切分到不同邊界，使用 subagent 隔離不同任務的上下文，前端 subagent 永遠看不到後端的資料庫 schema。
 
 Codex 還有一項很細緻的環境上下文設計：社群對 [codex-harness-internals](https://github.com/AlexKenbo/codex-harness-internals) 的原始碼分析顯示，`build_environment_update_item` 只在環境變更時輸出**有變動的欄位**（CWD、git 分支、檔案系統），而不是每一輪都貼上一遍完整的系統上下文。這是「不要在上下文裡保留重複 token」的工程細節。
 
@@ -35,13 +35,13 @@ Codex 還有一項很細緻的環境上下文設計：社群對 [codex-harness-i
 
 Codex 有兩項核心 harness 機制：
 
-**1. git worktree 隔離環境。** [《Harness Engineering》原文](https://openai.com/index/harness-engineering/) 的 "Environment" 一節明確指出：每個任務都在獨立的 git worktree 裡執行，搭配本機可觀測性堆疊（日誌、指標、追蹤），讓每項變更都在獨立環境中驗證。這就是課程第七講「為 agent 劃清每次任務的邊界」的實體實作——邊界不是靠指令懇求，而是由環境隔離強制執行。環境（environment）子系統在此成為硬隔離。
+**1. git worktree 隔離環境。** [《Harness Engineering》原文](https://openai.com/index/harness-engineering/) 的 "Environment" 一節明確指出：每個任務都在獨立的 git worktree 裡執行，搭配本機可觀測性堆疊（日誌、指標、追蹤），讓每項變更都在獨立環境中驗證。這就是課程第七講「為 agent 劃清每次任務的邊界」的實體實作，邊界不是靠指令懇求，而是由環境隔離強制執行。環境（environment）子系統在此成為硬隔離。
 
-**2. 核心層級 subagent。** Codex 的 `spawn_agent` / `wait_agent` 是核心層級工具：模型明確建立 subagent、給它獨立的 session 歷史和工具集，並等待結果。subagent 會繼承父層的 AGENTS.md 指令，但在**自己的上下文**裡執行。設定放在 `.codex/agents/*.toml`，可指定不同模型和指令（細節請參閱 [Context Engineering for Codex CLI](https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/) 的 Sub-agents 一節）。這是「上下文隔離」的直接實作——也體現了課程第十二講的「交接」精神：每個 subagent 都是邊界清楚的工作單元。
+**2. 核心層級 subagent。** Codex 的 `spawn_agent` / `wait_agent` 是核心層級工具：模型明確建立 subagent、給它獨立的 session 歷史和工具集，並等待結果。subagent 會繼承父層的 AGENTS.md 指令，但在**自己的上下文**裡執行。設定放在 `.codex/agents/*.toml`，可指定不同模型和指令（細節請參閱 [Context Engineering for Codex CLI](https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/) 的 Sub-agents 一節）。這是「上下文隔離」的直接實作，也體現了課程第十二講的「交接」精神：每個 subagent 都是邊界清楚的工作單元。
 
 ## 回饋子系統：把驗證指令寫進規範
 
-OpenAI 的實務最強調的一點是：在 AGENTS.md 裡明確列出驗證指令，把「如何確認做對了」變成儲存庫的一部分。Codex 的工程流程中，測試、CI、文件、可觀測性設定——全都由 Codex 產生，而且全都是「可執行的驗證路徑」。模型能力強卻不可靠的解法，不是祈禱模型自律，而是讓**驗證路徑成為 harness 的預設元件**。
+OpenAI 的實務最強調的一點是：在 AGENTS.md 裡明確列出驗證指令，把「如何確認做對了」變成儲存庫的一部分。Codex 的工程流程中，測試、CI、文件、可觀測性設定，全都由 Codex 產生，而且全都是「可執行的驗證路徑」。模型能力強卻不可靠的解法，不是祈禱模型自律，而是讓**驗證路徑成為 harness 的預設元件**。
 
 核准原則（approval policies）和計畫模式（plan mode）則是另一個回饋方向：執行高風險操作前先提出計畫、先取得核准，把「任務邊界」和「人類決策權」做成執行時期控制。
 
@@ -55,13 +55,13 @@ OpenAI 的實務最強調的一點是：在 AGENTS.md 裡明確列出驗證指�
 | 狀態 | Write 策略（狀態寫進檔案/文件） | 依賴約定而非內建記憶 |
 | 回饋 | 驗證命令入規範 + 審批策略 + plan mode | 回饋路徑預設化，值得抄 |
 
-Codex 和 Claude Code 的對比很有意思：Claude Code 是「加法」——把記憶、permissions、subagent 全都做到核心裡；Codex 是「減法」——核心盡量保持克制，把更多責任放在儲存庫慣例和上下文工程上。這也是為什麼社群常說「Codex 的 harness 哲學比它的程式碼更有價值」。
+Codex 和 Claude Code 的對比很有意思：Claude Code 是「加法」，把記憶、permissions、subagent 全都做到核心裡；Codex 是「減法」，核心盡量保持克制，把更多責任放在儲存庫慣例和上下文工程上。這也是為什麼社群常說「Codex 的 harness 哲學比它的程式碼更有價值」。
 
 ## 值得借鑑的設計
 
-1. **把 AGENTS.md 當成目錄頁來寫**：控制在 100 行左右，指向 docs/ 裡的細節，並可進行機械化檢查。
+1. **把 AGENTS.md 當成目錄頁來寫**：控制在 100 行左右，指向 docs/ 裡的細節，並可做機械化檢查。
 2. **只寫不變量，不微觀管理實作**：硬性約束 + 驗證指令，其餘交給模型。
-3. **用 worktree 進行環境隔離**：任務邊界由環境強制執行，不靠指令懇求。
+3. **用 worktree 隔離環境**：任務邊界由環境強制執行，不靠指令懇求。
 4. **環境上下文只傳增量**：每輪只輸出變動的欄位，不要重複貼上完整的系統上下文。
 5. **用 subagent 隔離上下文**：拆任務的同時也拆上下文，不要讓子任務污染主循環。
 
