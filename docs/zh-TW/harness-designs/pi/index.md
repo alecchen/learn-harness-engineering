@@ -63,13 +63,13 @@ Pi 本身沒有內建強制測試閘門（那是使用者要在 AGENTS.md 裡寫
 
 用課程五子系統為 Pi 評分（主觀，僅供對照）：
 
-| 子系统 | Pi 的实现 | 评价 |
+| 子系統 | Pi 的實現 | 評價 |
 | --- | --- | --- |
-| 指令 | AGENTS.md 分级加载 + SYSTEM.md | 层级清晰，但规则本身要靠用户写 |
-| 工具 | 技能按需加载 + 扩展全生命周期钩子 | 极强，把工具系统做成了可编程面 |
-| 环境 | SYSTEM.md 做环境自描述；运行时环境靠用户在 AGENTS.md 里声明 | 机制是开放的，但可复现性依赖用户自述 |
-| 状态 | 会话树 + 压缩可定制 + PROGRESS.md | 极强，跨会话与可恢复性是其核心 |
-| 反馈 | 验证命令靠用户定义；session-summary / extract-patterns 机制化 | 机制提供，内容靠用户 |
+| 指令 | AGENTS.md 分級載入 + SYSTEM.md | 層級清晰，但规则本身要靠用戶写 |
+| 工具 | 技能按需載入 + 擴充全生命週期鉤子 | 極強，把工具系統做成了可程式化介面 |
+| 環境 | SYSTEM.md 做環境自描述；運行時環境靠用戶在 AGENTS.md 裡聲明 | 機制是開放的，但可復現性依賴用戶自述 |
+| 狀態 | 會話樹 + 壓縮可自訂 + PROGRESS.md | 極強，跨會話與可恢復性是其核心 |
+| 回饋 | 驗證命令靠用戶定義；session-summary / extract-patterns 機制化 | 機制提供，內容靠用戶 |
 
 Pi 的取捨和 Claude Code / Codex 形成鮮明對比：Claude Code 把「記憶、permissions、subagent」全都做到核心裡，開箱即用；Codex 把「儲存庫規範、環境隔離」設為預設；Pi 選擇**什麼都不替你決定**——它把決定權做成擴充點。代價是你要嘛自己寫擴充，要嘛安裝別人寫好的套件。
 
@@ -84,11 +84,11 @@ Pi 的取捨和 Claude Code / Codex 形成鮮明對比：Claude Code 把「記�
 
 每一項論述都能追溯到以下原文或原始碼，避免憑印象轉述：
 
-- **pi.dev 官网**：定位原文 "Ask Pi to build what you want, or install a package that does it your way"、四層可自訂項目、session 樹（"sessions are stored as trees"、`/tree`、單一檔案儲存、匯出 HTML / 分享 gist）。<br/>https://pi.dev/
-- **pi.dev 官方文档 · Sessions**：compaction 可插拔（topic-based / code-aware / 更換摘要模型）、自動 compaction 與動態上下文注入的機制說明。<br/>https://pi.dev/docs/usage/sessions
-- **pi.dev 官方文档 · Extensions**：擴充可在每輪推理前注入訊息、過濾歷史、執行 RAG、建構長期記憶。<br/>https://pi.dev/docs/usage/extensions
-- **pi.dev 官方文档 · Project Context**：SYSTEM.md 的 replace / append 語意。<br/>https://pi.dev/docs/usage/project-context
-- **Pi Coding Agent 源码 README**（badlogic/pi-mono）：AGENTS.md 三級載入順序（全域 → 父目錄 → 目前目錄）、`/compact` 與自動 compaction 的觸發條件及 2 萬個 token 切割點、Skills 隨選載入與 Agent Skills 標準、Hooks 生命週期與四種官方範例用途、Programmatic Usage（JSON / RPC / SDK）。<br/>https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md
-- **pi-agent-harness 社区仓库**：skill-router / session-summary / extract-patterns / telemetry 擴充，VISION.md / PROGRESS.md / LESSONS.md / STANDARDS.md 檔案體系。<br/>https://github.com/LabidySabidy/pi-agent-harness
+- **pi.dev 官網**：定位原文 "Ask Pi to build what you want, or install a package that does it your way"、四層可自訂項目、session 樹（"sessions are stored as trees"、`/tree`、單一檔案儲存、匯出 HTML / 分享 gist）。<br/>https://pi.dev/
+- **pi.dev 官方文件 · Sessions**：compaction 可插拔（topic-based / code-aware / 更換摘要模型）、自動 compaction 與動態上下文注入的機制說明。<br/>https://pi.dev/docs/usage/sessions
+- **pi.dev 官方文件 · Extensions**：擴充可在每輪推理前注入訊息、過濾歷史、執行 RAG、建構長期記憶。<br/>https://pi.dev/docs/usage/extensions
+- **pi.dev 官方文件 · Project Context**：SYSTEM.md 的 replace / append 語意。<br/>https://pi.dev/docs/usage/project-context
+- **Pi Coding Agent 原始碼 README**（badlogic/pi-mono）：AGENTS.md 三級載入順序（全域 → 父目錄 → 目前目錄）、`/compact` 與自動 compaction 的觸發條件及 2 萬個 token 切割點、Skills 隨選載入與 Agent Skills 標準、Hooks 生命週期與四種官方範例用途、Programmatic Usage（JSON / RPC / SDK）。<br/>https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md
+- **pi-agent-harness 社群儲存庫**：skill-router / session-summary / extract-patterns / telemetry 擴充，VISION.md / PROGRESS.md / LESSONS.md / STANDARDS.md 檔案體系。<br/>https://github.com/LabidySabidy/pi-agent-harness
 
 相關講義：[第二講 · Harness 到底是什麼](../lectures/lecture-02-what-a-harness-actually-is/) ｜ [第五講 · 讓跨 session 的任務保持上下文連續](../lectures/lecture-05-why-long-running-tasks-lose-continuity/) ｜ [第十三講 · 從手動驅動到自動循環](../lectures/lecture-13-loop-engineering/)

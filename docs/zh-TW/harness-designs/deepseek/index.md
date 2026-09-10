@@ -14,14 +14,14 @@
 
 ## 架構核心 1：能力接縫（Capability Seam）
 
-DeepSeek Harness 使用 Service 表示「能力」，幾乎每項能力都拆成三層：
+DeepSeek Harness 使用 Service 表示「能力」，並將幾乎每項能力拆分為三層：
 
 ```
-Service Definition（能力定义）
+Service Definition（服務定義）
         ↓
-Service Provider（能力提供者）
+Service Provider（服務提供者）
         ↓
-Consumer（能力消费者）
+Consumer（服務使用者）
 ```
 
 以檔案系統為例：`FS Service` 下面有 Local FS、E2B FS、Remote FS 等多個 Provider，向上統一公開為 file tools。Shell、Subprocess、Sandbox、Web、LLM、SubAgent 都採用同一套結構。這套三層結構不是我們總結的——[架構文件 · Capability seams](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.md)原文就是：*a seam is a swappable capability with three roles: a Service Definition declaring the interface, a Service Provider implementing it, and a Consumer using it, commonly a model-facing tool*（能力接縫 = 可替換的能力，包含三種角色：宣告介面的 Service Definition、實作它的 Service Provider，以及使用它的 Consumer；後者通常是面向模型的工具）。
@@ -37,7 +37,7 @@ turn/start → claim input → assemble（system prompt / context / tools）
   → agent/pre-step → step/start → LLM request（agent/request）→ llm/stream
   → assistant/message → tool/call
   → tools/pre-execute（permission / guard / policy / hook）
-  → tools/execute → tools/post-execute → tool/result → step/end → 下一轮
+  → tools/execute → tools/post-execute → tool/result → step/end → 下一輪
 ```
 
 （上面的管線轉寫自 [架構文件 · Turn flow](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.md) 一節：`turn/*`、`step/*`、`user/message`、`assistant/*`、`tool/*` 是持久化的 session 事件，`agent/pre-step`、`agent/request`、`llm/stream`、`tools/*` 則是 plugin 可以監聽的擴充點。）
@@ -58,13 +58,13 @@ DeepSeek Harness 有一個 **append-only 的 Session Event Log（僅附加的 se
 
 ## 對應到課程框架
 
-| 子系统 | DeepSeek Harness 的实现 | 评价 |
+| 子系統 | DeepSeek Harness 的實現 | 評價 |
 | --- | --- | --- |
-| 指令 | 插件化；规则/技能均以插件形态注入 | 极自由，但没有内置的"CLAUDE.md"式惯例 |
-| 工具 | Service Definition → Provider → Consumer 能力接缝 | 工具子系统标准化的极致 |
-| 环境 | 沙箱/FS/Shell 全部可换 Provider（含远程 E2B） | 环境彻底可插拔 |
-| 状态 | append-only Session Event Log + Model-visible means logged | 可观测性是第一性约束 |
-| 反馈 | tools/pre-execute 上的 permission / guard / policy / hook | 反馈机制事件化 |
+| 指令 | 插件化；規則/技能均以插件形態注入 | 極自由，但沒有內建的"CLAUDE.md"式慣例 |
+| 工具 | Service Definition → Provider → Consumer 能力接縫 | 工具子系統標準化的極致 |
+| 環境 | 沙箱/FS/Shell 全部可換 Provider（含遠端 E2B） | 環境徹底可插拔 |
+| 狀態 | append-only Session Event Log + Model-visible means logged | 可觀測性是第一性約束 |
+| 回饋 | tools/pre-execute 上的 permission / guard / policy / hook | 回饋機制事件化 |
 
 DeepSeek Harness 和其他三款產品的根本差異在於：Pi、Claude Code、Codex 都是在「一個具體的 agent」內部最佳化 harness；DeepSeek Harness 則把 harness 定義成**獨立於模型的作業系統**，agent 本身只是這套 OS 上的可替換應用程式。代價也很明顯——自由度高表示設定成本也高，這是「harness 即 OS」這套設計固有的另一面（開發者預覽階段的定位也是「搶先體驗、機制仍在演進」）。
 
@@ -79,9 +79,9 @@ DeepSeek Harness 和其他三款產品的根本差異在於：Pi、Claude Code�
 
 每一項論述都能追溯到以下原文或原始碼，避免憑印象轉述：
 
-- **DeepSeek Harness 官网**：產品定義 "Agent = Model + Environment + Tools + State"、Developer Preview 定位與 `dsh` 指令。<br/>https://deepseek.com/harness
-- **deepseek-ai/deepseek-harness 仓库**（指令 `dsh`，MIT 授權條款）：<br/>https://github.com/deepseek-ai/deepseek-harness
-- **架构文档 architecture.md**：本篇最核心的出處——"Every part of the product is a plugin"、"There is no privileged core to patch"、Turn flow 事件管線、Capability seams 三層角色、"Model-visible means logged" 與執行時期不變量、append-only Session Event Log、fs/tools/telemetry 等能力接縫與 `ctx.*` 子系統。<br/>https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.md
-- **架构文档 · 配套子文档**：Cordis 核心簡介（plugins contribute services, typed events, reversible effects）、能力接縫細節、Session 子系統。<br/>https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-primer.md ｜ https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/capability-seams.md ｜ https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/session.md
+- **DeepSeek Harness 官網**：產品定義 "Agent = Model + Environment + Tools + State"、Developer Preview 定位與 `dsh` 指令。<br/>https://deepseek.com/harness
+- **deepseek-ai/deepseek-harness 儲存庫**（指令 `dsh`，MIT 授權條款）：<br/>https://github.com/deepseek-ai/deepseek-harness
+- **架構文件 architecture.md**：本篇最核心的出處——"Every part of the product is a plugin"、"There is no privileged core to patch"、Turn flow 事件管線、Capability seams 三層角色、"Model-visible means logged" 與執行時期不變量、append-only Session Event Log、fs/tools/telemetry 等能力接縫與 `ctx.*` 子系統。<br/>https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.md
+- **架構文件 · 配套子文件**：Cordis 核心簡介（plugins contribute services, typed events, reversible effects）、能力接縫細節、Session 子系統。<br/>https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-primer.md ｜ https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/capability-seams.md ｜ https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/session.md
 
 相關講義：[第十一講 · 讓 agent 的執行過程可觀測](../lectures/lecture-11-why-observability-belongs-inside-the-harness/) ｜ [第十二講 · 每次 session 結束前都做好交接](../lectures/lecture-12-why-every-session-must-leave-a-clean-state/) ｜ [第二講 · Harness 到底是什麼](../lectures/lecture-02-what-a-harness-actually-is/)

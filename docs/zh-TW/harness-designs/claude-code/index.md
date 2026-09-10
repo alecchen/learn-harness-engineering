@@ -59,13 +59,13 @@ Claude Code 的日誌是完整的附加式記錄（history.jsonl），加上 `/c
 
 ## 對應到課程框架
 
-| 子系统 | Claude Code 的实现 | 评价 |
+| 子系統 | Claude Code 的實現 | 評價 |
 | --- | --- | --- |
-| 指令 | 作用域分层（组织/用户/项目/本地）+ 自动记忆 | 分层记忆是标杆实现 |
-| 工具 | 技能 + MCP + 钩子 + 子智能体四类扩展 | 职责划分清晰，是核心亮点 |
-| 环境 | 项目内设置 + settings.json | 靠用户在 CLAUDE.md 里自描述 |
-| 状态 | 追加式会话存储 + 五层压缩 + resume/fork | 极强，长任务连续性的参考实现 |
-| 反馈 | 权限分类器 + PostToolUse 钩子强制检查 | 把"防提前宣告完成"变成确定性机制 |
+| 指令 | 作用域分層（組織/用戶/項目/本地）+ 自動記憶 | 分層記憶是標桿實現 |
+| 工具 | 技能 + MCP + 鉤子 + 子代理四類擴充 | 職責劃分清晰，是核心亮點 |
+| 環境 | 項目內設置 + settings.json | 靠用戶在 CLAUDE.md 裡自描述 |
+| 狀態 | 追加式會話儲存 + 五層壓縮 + resume/fork | 極強，長任務連續性的參考實現 |
+| 回饋 | 權限分類器 + PostToolUse 鉤子強制檢查 | 把"防提前宣告完成"變成確定性機制 |
 
 ## 值得借鑑的設計
 
@@ -79,10 +79,10 @@ Claude Code 的日誌是完整的附加式記錄（history.jsonl），加上 `/c
 
 每一項論述都能追溯到以下原文或原始碼，避免憑印象轉述：
 
-- **Claude Code 官方文档 · Memory**：每次 session 使用全新上下文、CLAUDE.md 四種作用範圍、子目錄隨選載入、auto memory（200 行 / 25KB）、`/init` 產生 CLAUDE.md。<br/>https://code.claude.com/docs/en/memory
-- **Claude Code 官方文档 · Skills / MCP / Hooks / Sub-agents**：四種擴充機制的定義與事件（PreToolUse / PostToolUse / Stop）。<br/>https://code.claude.com/docs/en/skills ｜ https://code.claude.com/docs/en/mcp ｜ https://code.claude.com/docs/en/hooks ｜ https://code.claude.com/docs/en/sub-agents
+- **Claude Code 官方文件 · Memory**：每次 session 使用全新上下文、CLAUDE.md 四種作用範圍、子目錄隨選載入、auto memory（200 行 / 25KB）、`/init` 產生 CLAUDE.md。<br/>https://code.claude.com/docs/en/memory
+- **Claude Code 官方文件 · Skills / MCP / Hooks / Sub-agents**：四種擴充機制的定義與事件（PreToolUse / PostToolUse / Stop）。<br/>https://code.claude.com/docs/en/skills ｜ https://code.claude.com/docs/en/mcp ｜ https://code.claude.com/docs/en/hooks ｜ https://code.claude.com/docs/en/sub-agents
 - **VILA Lab《Dive into Claude Code》**（原始碼層級拆解報告）：五層 compaction 管線、permissions 七種模式 + ML 分類器、sidechain subagent、附加式 session 儲存 history.jsonl。<br/>https://zhiqiangshen.com/projects/Claude_Code_Report/Claude_Code_Report.pdf
 - **Anthropic《Effective harnesses for long-running agents》**：「可靠性來自 harness 而非模型」、agent 會自信地稱讚自己的工作、用 hooks 進行驗證等觀點的出處。<br/>https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
-- **Claude Code Full Stack 导读**（社群，CLAUDE.md / Skills / MCP / Subagents / Hooks 分層）：作為擴充機制職責分離的補充閱讀。<br/>https://jsmanifest.com/claude-code-full-stack-guide
+- **Claude Code Full Stack 導讀**（社群，CLAUDE.md / Skills / MCP / Subagents / Hooks 分層）：作為擴充機制職責分離的補充閱讀。<br/>https://jsmanifest.com/claude-code-full-stack-guide
 
 相關講義：[第三講 · 讓程式碼儲存庫成為唯一的事實來源](../lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) ｜ [第九講 · 防止 agent 提前宣告完成](../lectures/lecture-09-why-agents-declare-victory-too-early/) ｜ [第十講 · 跑通完整流程才算真正驗證](../lectures/lecture-10-why-end-to-end-testing-changes-results/)

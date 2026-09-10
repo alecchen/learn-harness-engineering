@@ -47,13 +47,13 @@ OpenAI 的實務最強調的一點是：在 AGENTS.md 裡明確列出驗證指�
 
 ## 對應到課程框架
 
-| 子系统 | Codex 的实现 | 评价 |
+| 子系統 | Codex 的實現 | 評價 |
 | --- | --- | --- |
-| 指令 | AGENTS.md 目录页 + docs/ 拆分 + 执行不变量 | 教科书级，定义了"给地图不给说明书" |
-| 工具 | worktree 隔离 + spawn_agent 子智能体 | 边界靠环境硬隔离，很强 |
-| 环境 | 独立 worktree + 可观测性栈 | worktree 隔离是其招牌 |
-| 状态 | Write 策略（状态写进文件/文档） | 依赖约定而非内建记忆 |
-| 反馈 | 验证命令入规范 + 审批策略 + plan mode | 反馈路径默认化，值得抄 |
+| 指令 | AGENTS.md 目錄頁 + docs/ 拆分 + 執行不變量 | 教科書級，定義了"給地圖不給說明書" |
+| 工具 | worktree 隔離 + spawn_agent 子代理 | 邊界靠環境硬隔離，很強 |
+| 環境 | 獨立 worktree + 可觀測性堆疊 | worktree 隔離是其招牌 |
+| 狀態 | Write 策略（狀態寫進檔案/文件） | 依賴約定而非內建記憶 |
+| 回饋 | 驗證命令入規範 + 審批策略 + plan mode | 回饋路徑預設化，值得抄 |
 
 Codex 和 Claude Code 的對比很有意思：Claude Code 是「加法」——把記憶、permissions、subagent 全都做到核心裡；Codex 是「減法」——核心盡量保持克制，把更多責任放在儲存庫慣例和上下文工程上。這也是為什麼社群常說「Codex 的 harness 哲學比它的程式碼更有價值」。
 
@@ -70,8 +70,8 @@ Codex 和 Claude Code 的對比很有意思：Claude Code 是「加法」——�
 每一項論述都能追溯到以下原文或原始碼，避免憑印象轉述：
 
 - **OpenAI《Harness Engineering》**：AGENTS.md 目錄頁和約 100 行的建議、executive invariants / don't micromanage、worktree 隔離 + 可觀測性堆疊、把驗證指令寫入規範、上百萬行產品案例、核准原則與 plan mode。本篇所有核心論述的主要出處。<br/>https://openai.com/index/harness-engineering/
-- **OpenAI 官方《AGENTS.md》规范**（AGENTS.md 作為跨工具慣例的標準）：<br/>https://openai.com/index/agents-md/
-- **Codex CLI 开源仓库**（以 Rust 實作的單體二進位檔）：<br/>https://github.com/openai/codex
+- **OpenAI 官方《AGENTS.md》規範**（AGENTS.md 作為跨工具慣例的標準）：<br/>https://openai.com/index/agents-md/
+- **Codex CLI 開源儲存庫**（以 Rust 實作的單體二進位檔）：<br/>https://github.com/openai/codex
 - **Context Engineering for Codex CLI**（社群）：Write-Select-Compress-Isolate 框架、`/compact` 與 `compact_prompt`、`spawn_agent` / `wait_agent` subagent 與 `.codex/agents/*.toml` 設定。<br/>https://codex.danielvaughan.com/2026/06/10/context-engineering-codex-cli-write-select-compress-isolate-june-2026/
 - **codex-harness-internals**（社群原始碼分析）：`build_environment_update_item` 增量環境上下文等實作細節。<br/>https://github.com/AlexKenbo/codex-harness-internals
 
