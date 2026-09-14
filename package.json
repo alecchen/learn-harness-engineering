@@ -12,6 +12,8 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "lecture:run": "tsx",
+    "anchors:build": "node --import tsx scripts/build-anchor-map.ts",
+    "anchors:check": "node --import tsx scripts/validate-anchors.ts",
     "screenshots:readme": "node --import tsx scripts/capture-readme-screenshots.ts",
     "pdf:export": "node --import tsx scripts/build-course-pdfs.ts",
     "pdf:build": "npm run docs:build && npm run pdf:export"
@@ -27,5 +29,11 @@
   },
   "dependencies": {
     "github-slugger": "^2.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "fsevents@2.3.3": true,
+    "fsevents@2.3.2": true,
+    "esbuild@0.27.4": true
   }
 }

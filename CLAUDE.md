@@ -61,3 +61,14 @@ Each project's starter/solution is a complete copy of the Electron app at that e
 ## Multilingual Content
 
 Course documentation is organized by locale under `docs/<lang>/`. Keep English as the structural source of truth, keep localized directories in sync, and preserve runnable code examples across languages.
+
+### Heading anchors
+
+Heading ids are locale-invariant English slugs so that a URL fragment survives a language switch (`#real-world-example` works on the English, Chinese, and Japanese pages of the same section). This is applied at build time by `docs/.vitepress/anchor-map.json`, generated from the English source by `scripts/build-anchor-map.ts` and enforced by `scripts/validate-anchors.ts` (`npm run anchors:check`, run in CI).
+
+Consequences for anyone editing lecture or project pages:
+
+- **Run `npm run anchors:build` after changing any English heading.** The validator fails the build if the map goes stale.
+- **Keeping a locale's heading count equal to English is what enables cross-language links.** Ids are matched by position, not by title text, so translated titles are free but the order and number of headings must line up.
+- **15 pages have known structure drift and intentionally keep localized ids** (lecture-11 and lecture-12 in 9 locales each, project-01 in 13, projects 02-06 in zh/zh-TW, six resources pages, harness-designs/codex in zh). Cross-language anchor links do not resolve on those pages. This is not a bug to fix: the translations are structurally different documents, and in the project pages the Chinese is more complete than the English stub. `npm run anchors:check` lists them.
+- Reordering sections without changing the count is not detected by the validator; it would silently mis-map ids. Prefer reordering English and the locale together.
