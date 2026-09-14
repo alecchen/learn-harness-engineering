@@ -1,10 +1,26 @@
 // Checks that docs/.vitepress/anchor-map.json is in sync with the English source.
 //
 // Heading ids are canonical English slugs applied to every locale, so the map
-// must be regenerated whenever English headings change. Drift between a locale's
-// heading count and English is expected for some pages (their structure differs)
-// and is reported as informational: those pages keep their localized ids rather
-// than getting ids that point at the wrong section.
+// must be regenerated whenever English headings change:
+//
+//   npm run anchors:build    # after editing any English heading
+//   npm run anchors:check    # fails if the map is stale; runs in CI
+//
+// Editing rules that keep cross-language anchor links working:
+//
+// - Ids are matched by position, not by heading text. Translated titles are
+//   free; what must line up with English is the number and order of headings.
+// - Reordering sections without changing the count is not detected here. It
+//   would silently mis-map ids, so reorder English and the locale together.
+//
+// 15 pages have known structure drift and intentionally keep localized ids:
+// lecture-11 and lecture-12 in 9 locales each (ar, de, es, fr, ja, ko, ru, tr,
+// uz), project-01 in 13, projects 02-06 in zh/zh-TW, six resources pages
+// (openai-advanced, reference, templates, plus two repo-template files), and
+// harness-designs/codex in zh. Cross-language anchor links do not resolve on
+// those pages. This is not a bug to fix: the translations are structurally
+// different documents, and for the project pages the Chinese is more complete
+// than the English stub. They are reported below as a note and do not fail.
 //
 // Run from the repo root: node --import tsx scripts/validate-anchors.ts
 
