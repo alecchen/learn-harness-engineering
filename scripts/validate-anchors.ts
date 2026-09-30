@@ -80,6 +80,19 @@ async function main() {
 
   for (const [key, entry] of Object.entries(anchorMap)) {
     for (const [locale, count] of Object.entries(entry.locales)) {
+      try {
+        const source = await fs.readFile(`${docsRoot}/${locale}/${key}`, 'utf8')
+        const actualCount = collectHeadingIds(md, source).length
+        if (actualCount !== count) {
+          findings.push({
+            docPath: `${locale}/${key}`,
+            message: `heading count is stale (${count} recorded, ${actualCount} actual); run scripts/build-anchor-map.ts`,
+          })
+        }
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+        findings.push({ docPath: `${locale}/${key}`, message: 'mapped source file is missing' })
+      }
       if (count !== entry.ids.length) {
         drifted.push({
           docPath: key,

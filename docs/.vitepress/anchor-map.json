@@ -10,12 +10,14 @@
       "observability-and-session-persistence",
       "mapping-to-the-course-framework",
       "designs-worth-adopting",
-      "references-original-sources-source-code"
+      "references",
+      "official-anthropic-documentation",
+      "independent-community-research"
     ],
     "locales": {
       "ar": 10,
       "de": 10,
-      "en": 10,
+      "en": 12,
       "es": 10,
       "fr": 10,
       "ja": 10,
@@ -27,7 +29,7 @@
       "uz": 10,
       "vi": 10,
       "zh": 10,
-      "zh-TW": 10
+      "zh-TW": 12
     }
   },
   "harness-designs/codex/index.md": {
